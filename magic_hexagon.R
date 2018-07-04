@@ -3,7 +3,6 @@ library(gtools)
 po3 <- permutations(19, 3, v = 1:19)
 po3 <- subset(po3, rowSums(po3)==38)
 po3list <- split(po3, row(po3))
-# po3list <- po3list[sapply(po3list, function(x){sum(x)==38})]
 names(po3list) <- NULL
 
 po4 <- permutations(19, 4, v = 1:19)
@@ -56,24 +55,10 @@ getrow3 <- function(row2) {
 
 tillrow3 <- lapply(tillrow2, function(lvl1){
   currelement <<- lvl1
-  # row2_3 <- lapply(lvl1[[2]], getrow3)
   lvl1[[2]] <- lapply(lvl1[[2]], getrow3)
-    # if( !all(sapply(row2_3, is.null)) ){
-    #   lvl1[[2]] <- NULL
-    #   row2_3 <- row2_3[sapply(row2_3, !is.null)]
-    #   return(list(lvl1, row2_3)) 
-    # } else {return(NULL)}
-  # row2_3 <- row2_3[sapply(row2_3, function(x){!is.null(x)})]
   lvl1[[2]] <- lvl1[[2]][sapply(lvl1[[2]], function(x){!is.null(x)})]
-  # lvl1[[2]] <- NULL
   return(lvl1)
 })
-
-# tillrow3 <- lapply(tillrow3, function(x){
-#   filtrow2 <- x[[2]][sapply(x[[2]], function(y){nrow(y[[2]])>0})]
-#   x[[2]] <- NULL
-#   list(x[[1]], filtrow2)
-# })
 
 tillrow3 <- tillrow3[sapply(tillrow3, function(x){length(x[[2]])>0})]
 
@@ -124,20 +109,6 @@ tillrow4 <- lapply(tillrow3, function(lvl1){
   lvl1
 })
 
-# remove elements of row3 that have empty matrices of row4
-
-# tillrow4 <- lapply(tillrow4, function(lvl1){
-#   row2 <- lapply(lvl1[[2]], function(lvl2){
-#     filtrow3 <- lvl2[[2]][sapply(lvl2[[2]], function(x){nrow(x[[2]])>0})]
-#     lvl2[[2]] <- NULL
-#     names(filtrow3) <- NULL
-#     list(lvl2, filtrow3)
-#   })
-#   lvl1[[2]] <- NULL
-#   names(row2) <- NULL
-#   list(lvl1, row2)
-# })
-
 # remove elements of row2 that don't have anything in them
 
 tillrow4 <- lapply(tillrow4, function(lvl1){
@@ -183,6 +154,7 @@ getrow5 <- function(row4){
     }
   } else {(return(NULL))}
 }
+
 # make tillrow5
 
 tillrow5 <- lapply(tillrow4, function(lvl1){
@@ -199,32 +171,21 @@ tillrow5 <- lapply(tillrow4, function(lvl1){
     lvl2[[2]] <- lvl2[[2]][sapply(lvl2[[2]], function(x){length(x[[2]])>0})]
     lvl2
   })
-  # lvl1[[2]] <- lvl1[[2]][sapply(lvl1[[2]], function(x){!is.null(x)})]
   lvl1
 })
 
 tillrow5 <- tillrow5[sapply(tillrow5, function(x){length(x[[2]])>0})]
-tillrow5 <- lapply(tillrow5filt1, function(lvl1){
+tillrow5 <- lapply(tillrow5, function(lvl1){
   lvl1[[2]] <- lvl1[[2]][sapply(lvl1[[2]], function(x){length(x[[2]])>0})]
   lvl1
 })
-tillrow5 <- tillrow5filt2[sapply(tillrow5filt2, function(x){length(x[[2]])>0})]
-# remove elements of row4 that have empty matrices of row5
-# 
-# tillrow5 <- lapply(tillrow5, function(lvl1){
-#   row2 <- lapply(lvl1[[2]], function(lvl2){
-#     row3 <- lapply(lvl2[[2]], function(lvl3){
-#       filtrow4 <- lvl3[[2]][sapply(lvl3[[2]], function(x){nrow(x[[2]])>0})]
-#       lvl3[[2]] <- NULL
-#       list(lvl3, filtrow3)
-#     })
-#     lvl2[[2]] <- NULL
-#     list(lvl2, row3)
-#   })
-#   lvl1[[2]] <- NULL
-#   list(lvl1, row2)
-# })
+tillrow5 <- tillrow5[sapply(tillrow5, function(x){length(x[[2]])>0})]
 
-# remove elements of row3 that don't have anything in them
-
-# remove elements of row2 that don't have anything in them
+final_neat <- lapply(tillrow5, function(hex){
+  row1 <- hex[[1]]
+  row2 <- hex[[2]][[1]][[1]]
+  row3 <- hex[[2]][[1]][[2]][[1]][[1]]
+  row4 <- hex[[2]][[1]][[2]][[1]][[2]][[1]][[1]]
+  row5 <- hex[[2]][[1]][[2]][[1]][[2]][[1]][[2]]
+  list(row1, row2, row3, row4, row5)
+})
