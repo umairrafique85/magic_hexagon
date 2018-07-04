@@ -1,3 +1,5 @@
+# Will need gtools library. Install using > install.packages('gtools')
+
 library(gtools)
 
 po3 <- permutations(19, 3, v = 1:19)
@@ -11,13 +13,7 @@ po4 <- subset(po4, rowSums(po4)==38)
 po5 <- permutations(19, 5, v = 1:19)
 po5 <- subset(po5, rowSums(po5)==38)
 
-testlist <- lapply(po3list, function(x){
-  if( x[1]==1 ){
-    return(x)
-  } else {return(NULL)}
-})
-
-testlist[sapply(testlist, function(x){!is.null(x)})]
+# search space defined, now for the fun part
 
 getrow2 <- function(x) {
   can2 <- po4[((x[1]+po4[,1])>=19)&((x[3]+po4[,4])>=19),]
@@ -28,6 +24,8 @@ getrow2 <- function(x) {
 tillrow2 <- lapply(po3list, getrow2)
 filterlistind2 <- sapply(tillrow2, function(x){nrow(x[[2]])>0})
 tillrow2 <- tillrow2[filterlistind2]
+
+# converting row2 matrices to list to enable expansion
 
 fix2list <- function(x){
   x[[2]] <- split(x[[2]], row(x[[2]]))
@@ -40,12 +38,15 @@ tillrow2 <- lapply(tillrow2, fix2list)
 getrow3 <- function(row2) {
   can3 <- po5[((currelement[[1]][1]+row2[1]+po5[,1])==38)&((currelement[[1]][[2]]+row2[2]+po5[,2])>=19)&((currelement[[1]][3]+row2[4]+po5[,5])==38)&((currelement[[1]][2]+row2[3]+po5[,4])>=19),]
   if (length(can3)>0){
+    # if the row is a matrix
     if(!is.null(nrow(can3))){
       row3 <- can3[apply(can3, 1, function(y){!any(y%in%c(row2, currelement[[1]]))}),]
+      # if there are still elements left after filtering
       if (length(row3)>0){
         return(list(row2, row3))
       } else {return(NULL)}
       } else {
+        # if the row is a vector
         if( !any(can3%in%c(row2, currelement[[1]])) ){
           return(list(row2, can3))
         } else {return(NULL)}
@@ -59,6 +60,8 @@ tillrow3 <- lapply(tillrow2, function(lvl1){
   lvl1[[2]] <- lvl1[[2]][sapply(lvl1[[2]], function(x){!is.null(x)})]
   return(lvl1)
 })
+
+# remove elements of row1 that have empty row2's
 
 tillrow3 <- tillrow3[sapply(tillrow3, function(x){length(x[[2]])>0})]
 
@@ -174,12 +177,16 @@ tillrow5 <- lapply(tillrow4, function(lvl1){
   lvl1
 })
 
+# final cleanup
+
 tillrow5 <- tillrow5[sapply(tillrow5, function(x){length(x[[2]])>0})]
 tillrow5 <- lapply(tillrow5, function(lvl1){
   lvl1[[2]] <- lvl1[[2]][sapply(lvl1[[2]], function(x){length(x[[2]])>0})]
   lvl1
 })
 tillrow5 <- tillrow5[sapply(tillrow5, function(x){length(x[[2]])>0})]
+
+# list of nested lists looks ugly. Neat list of 12 lists of vectors. Easier to read
 
 final_neat <- lapply(tillrow5, function(hex){
   row1 <- hex[[1]]
@@ -189,3 +196,8 @@ final_neat <- lapply(tillrow5, function(hex){
   row5 <- hex[[2]][[1]][[2]][[1]][[2]][[1]][[2]]
   list(row1, row2, row3, row4, row5)
 })
+
+# neat presentation as dataframe
+
+data.frame(possibility=sapply(final_neat, function(x){x}))
+
