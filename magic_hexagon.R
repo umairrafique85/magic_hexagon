@@ -1,4 +1,5 @@
-# Will need gtools library. Install using > install.packages('gtools')
+# Will need gtools library for the permutations. Install using > install.packages('gtools')
+start_time <- proc.time()
 
 library(gtools)
 
@@ -201,3 +202,4 @@ final_neat <- lapply(tillrow5, function(hex){
 
 data.frame(possibility=sapply(final_neat, function(x){x}))
 
+proc.time() - start_time
