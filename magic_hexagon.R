@@ -200,6 +200,6 @@ final_neat <- lapply(tillrow5, function(hex){
 
 # neat presentation as dataframe
 
-data.frame(possibility=sapply(final_neat, function(x){x}))
+print(data.frame(possibility=sapply(final_neat, function(x){x})))
 
-proc.time() - start_time
+print(proc.time() - start_time)
